@@ -1,3 +1,26 @@
 <resources>
-    <string name="app_name">MyDatabase</string>
+    <string name="app_name">My Phone Numbers</string>
+    <string name="go_back">Go Backr</string>
+    <string name="attention">Attention</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="profile_picture">Picture</string>
+    <string name="dob">DOB</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you wish to delete this contact?</string>
+    <string name="no_item_description">There are no contacts to show.</string>
+    <string name="edit_item_title">Edit Contact</string>
+    <string name="item">Item</string>
+    <string name="item_detail_title">Detalles del Contacto</string>
+    <string name="item_entry_title">To Add Contact</string>
+    <string name="item_name_req">Contact\'s Name *</string>
+    <string name="item_phone_req">Phone *</string>
+    <string name="no">No</string>
+    <string name="save_action">Save</string>
+    <string name="yes">Yes</string>
+    <string name="required_fields">* required fields</string>
+    <string name="item_edit">Edit</string>
+    <string name="item_delete">Delete</string>
 </resources>

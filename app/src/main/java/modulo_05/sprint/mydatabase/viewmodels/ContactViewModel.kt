@@ -1,48 +1,67 @@
 package modulo_05.sprint.mydatabase.viewmodels
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import modulo_05.sprint.mydatabase.model.Contact
+import modulo_05.sprint.mydatabase.room.Contact
 import modulo_05.sprint.mydatabase.repository.ContactRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(private val contactRepository: ContactRepository) : ViewModel() {
-    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
-    val contacts = _contacts.asStateFlow()
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            contactRepository.getAllContacts().collect {
-                if(it.isNullOrEmpty()) {
-                    _contacts.value = emptyList()
-                } else {
-                    _contacts.value = it
 
-                }
-            }
+    var contactUIState by mutableStateOf(ContactUIState())
+        private set
+
+    private fun validateInput(uiState: ContactDetails = contactUIState.contactDetails): Boolean {
+        return uiState.name.isNotEmpty() && uiState.phone.isNotEmpty()
+    }
+    suspend fun saveContact() {
+        if (validateInput()) {
+            contactRepository.insertContact(contactUIState.contactDetails.toContact())
         }
     }
-
-    fun addContact(contact: Contact) {
-        viewModelScope.launch(Dispatchers.IO) {
-            contactRepository.addContact(contact)
-        }
+    fun updateUiState(contactDetails: ContactDetails) {
+        contactUIState =
+            ContactUIState(
+                contactDetails = contactDetails,
+                isEntryValid = validateInput(contactDetails)
+            )
     }
-    fun updateContact(contact: Contact) {
-        viewModelScope.launch(Dispatchers.IO) {
-            contactRepository.updateContact(contact)
-        }
-    }
-    fun deleteContact(contact: Contact) {
-        viewModelScope.launch(Dispatchers.IO) {
-            contactRepository.deleteContact(contact)
-        }
-    }
-
-
 }
+
+data class ContactUIState(
+    val contactDetails: ContactDetails = ContactDetails(),
+    val isEntryValid: Boolean = false
+)
+data class ContactDetails(
+    val id: Int = 0,
+    val name: String = "",
+    val phone: String = "",
+    val email: String? = null,
+    val profilePicture: String? = null,
+    val dateOfBirth: String? = null
+)
+fun ContactDetails.toContact(): Contact = Contact(
+    id = id,
+    name = name,
+    phone = phone ?: "",
+    email = email ?: "",
+    profilePicture ?: "",
+    dateOfBirth = dateOfBirth ?: "",
+)
+fun Contact.toContactDetails(): ContactDetails = ContactDetails(
+    id = id,
+    name = name,
+    phone = phone,
+    email = email,
+    profilePicture = profilePicture,
+    dateOfBirth = dateOfBirth
+)
+fun Contact.toContactUIState(isEntryValid: Boolean = false): ContactUIState = ContactUIState(
+    contactDetails = this.toContactDetails(),
+    isEntryValid = isEntryValid
+)
